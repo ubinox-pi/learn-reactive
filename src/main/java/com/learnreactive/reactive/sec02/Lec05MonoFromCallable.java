@@ -1,9 +1,11 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
 import com.learnreactive.reactive.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad
@@ -12,8 +14,8 @@ import reactor.core.publisher.Mono;
  *
  * Project: reactive
  * Package: com.learnreactive.reactive.sec2
- * Created by: Ashish Kushwaha on 22-10-2025 11:13
- * File: Lec07MonoFromRunnable
+ * Created by: Ashish Kushwaha on 22-10-2025 10:59
+ * File: Lec05MonoFromSupplier
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -23,23 +25,27 @@ import reactor.core.publisher.Mono;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class Lec07MonoFromRunnable {
+public class Lec05MonoFromCallable {
 
-    private static final Logger log = LoggerFactory.getLogger(Lec07MonoFromRunnable.class);
+    private static final Logger log = LoggerFactory.getLogger(Lec05MonoFromCallable.class);
 
     static void main() {
-        getProduct(2)
+        var list = List.of(1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10);
+        Mono.fromSupplier(() -> {
+                    try {
+                        return sum(list);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .subscribe(Util.subscriber("Ramjee"));
+
+        Mono.fromCallable(() -> sum(list))
+                .subscribe(Util.subscriber("Ashish"));
     }
 
-    private static Mono<String> getProduct(int productId) {
-        if (productId == 1) {
-            return Mono.fromSupplier(() -> Util.getFaker().commerce().productName());
-        }
-        return Mono.fromRunnable(() -> notifyBusiness(productId));
-    }
-
-    private static void notifyBusiness(int productId) {
-        log.info("Notifying the business about the product {}", productId);
+    private static int sum(List<Integer> list) throws Exception {
+        log.info("finding the sum of the list {}", list);
+        return list.stream().mapToInt(i -> i).sum();
     }
 }

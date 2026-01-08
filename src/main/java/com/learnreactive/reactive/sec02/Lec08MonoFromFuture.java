@@ -1,4 +1,4 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
 import com.learnreactive.reactive.common.Util;
 import org.slf4j.Logger;

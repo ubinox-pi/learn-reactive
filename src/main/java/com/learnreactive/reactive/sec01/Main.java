@@ -1,4 +1,4 @@
-package com.learnreactive.reactive.sec1;
+package com.learnreactive.reactive.sec01;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad
@@ -19,8 +19,8 @@ package com.learnreactive.reactive.sec1;
  *
  */
 
-import com.learnreactive.reactive.sec1.publisher.PublisherImpl;
-import com.learnreactive.reactive.sec1.subscriber.SubscriberImpl;
+import com.learnreactive.reactive.sec01.publisher.PublisherImpl;
+import com.learnreactive.reactive.sec01.subscriber.SubscriberImpl;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 

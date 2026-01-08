@@ -1,8 +1,11 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
+import com.learnreactive.reactive.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad
@@ -11,8 +14,8 @@ import reactor.core.publisher.Mono;
  *
  * Project: reactive
  * Package: com.learnreactive.reactive.sec2
- * Created by: Ashish Kushwaha on 21-10-2025 05:33
- * File: Lec03MonoSubscribe
+ * Created by: Ashish Kushwaha on 22-10-2025 10:59
+ * File: Lec05MonoFromSuplier
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -22,17 +25,18 @@ import reactor.core.publisher.Mono;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class Lec03MonoSubscribe {
+public class Lec05MonoFromSupplier {
 
-    private static final Logger log = LoggerFactory.getLogger(Lec03MonoSubscribe.class);
+    private static final Logger log = LoggerFactory.getLogger(Lec05MonoFromSupplier.class);
 
-    static void main() {
-        var mono = Mono.just(1)
-                .map(i -> i + 2);
+    static void main(String[] args) {
+        var list = List.of(1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10);
+        Mono.fromSupplier(() -> sum(list))
+                .subscribe(Util.subscriber("Ashish"));
+    }
 
-        mono.subscribe(i -> log.info("Received {}", i),
-                err -> new RuntimeException("error", err),
-                () -> log.info("Completed!"),
-                subscription -> subscription.request(1));
+    private static int sum(List<Integer> list) {
+        log.info("finding the sum of the list {}", list);
+        return list.stream().mapToInt(i -> i).sum();
     }
 }

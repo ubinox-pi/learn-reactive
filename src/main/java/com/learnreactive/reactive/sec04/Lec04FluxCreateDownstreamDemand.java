@@ -1,7 +1,7 @@
 package com.learnreactive.reactive.sec04;
 
 import com.learnreactive.reactive.common.Util;
-import com.learnreactive.reactive.sec1.subscriber.SubscriberImpl;
+import com.learnreactive.reactive.sec01.subscriber.SubscriberImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;

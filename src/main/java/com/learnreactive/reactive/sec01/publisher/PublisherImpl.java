@@ -1,7 +1,8 @@
-package com.learnreactive.reactive.sec2.client;
+package com.learnreactive.reactive.sec01.publisher;
 
-import com.learnreactive.reactive.common.AbstractHttpClient;
-import reactor.core.publisher.Mono;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad
@@ -9,9 +10,9 @@ import reactor.core.publisher.Mono;
  * See the LICENSE file in the project root for full license information.
  *
  * Project: reactive
- * Package: com.learnreactive.reactive.sec2.client
- * Created by: Ashish Kushwaha on 22-10-2025 15:41
- * File: ExternalServiceClient
+ * Package: com.learnreactive.reactive.sec1.publisher
+ * Created by: Ashish Kushwaha on 19-10-2025 17:56
+ * File: Publisher
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -21,14 +22,10 @@ import reactor.core.publisher.Mono;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class ExternalServiceClient extends AbstractHttpClient {
-    public Mono<String> getProductName(int productId) {
-        return this.httpClient.get()
-                .uri("/demo01/product/" + productId)
-                .responseContent()
-                .asString()
-                .next();
+public class PublisherImpl implements Publisher<String> {
+    @Override
+    public void subscribe(Subscriber<? super String> subscriber) {
+        Subscription subscription = new SubscriptionImpl(subscriber);
+        subscriber.onSubscribe(subscription);
     }
-
-
 }

@@ -1,4 +1,4 @@
-package com.learnreactive.reactive.sec1.subscriber;
+package com.learnreactive.reactive.sec01.subscriber;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;

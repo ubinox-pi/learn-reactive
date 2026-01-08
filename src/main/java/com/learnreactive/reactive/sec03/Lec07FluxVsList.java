@@ -1,9 +1,9 @@
 package com.learnreactive.reactive.sec03;
 
 import com.learnreactive.reactive.common.Util;
+import com.learnreactive.reactive.sec01.publisher.SubscriptionImpl;
+import com.learnreactive.reactive.sec01.subscriber.SubscriberImpl;
 import com.learnreactive.reactive.sec03.helper.NameGenerator;
-import com.learnreactive.reactive.sec1.publisher.SubscriptionImpl;
-import com.learnreactive.reactive.sec1.subscriber.SubscriberImpl;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad

@@ -1,8 +1,9 @@
-package com.learnreactive.reactive.sec1.publisher;
+package com.learnreactive.reactive.sec02;
 
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.stream.Stream;
 
 /*
  * Copyright (c) 2025 Ramjee Prasad
@@ -10,9 +11,9 @@ import org.reactivestreams.Subscription;
  * See the LICENSE file in the project root for full license information.
  *
  * Project: reactive
- * Package: com.learnreactive.reactive.sec1.publisher
- * Created by: Ashish Kushwaha on 19-10-2025 17:56
- * File: Publisher
+ * Package: com.learnreactive.reactive.sec2
+ * Created by: Ashish Kushwaha on 21-10-2025 05:07
+ * File: Lec01LasyStream
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -22,10 +23,13 @@ import org.reactivestreams.Subscription;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class PublisherImpl implements Publisher<String> {
-    @Override
-    public void subscribe(Subscriber<? super String> subscriber) {
-        Subscription subscription = new SubscriptionImpl(subscriber);
-        subscriber.onSubscribe(subscription);
+public class lec01LazyStream {
+
+    private static final Logger log = LoggerFactory.getLogger(lec01LazyStream.class);
+
+    static void main() {
+        Stream.of(1)
+                .peek(i -> log.info("Received {}", i))
+                .toList();
     }
 }

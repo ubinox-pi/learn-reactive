@@ -1,4 +1,4 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
 import com.learnreactive.reactive.assignments.assignment01.FileService;
 import com.learnreactive.reactive.assignments.assignment01.FileServiceImpl;

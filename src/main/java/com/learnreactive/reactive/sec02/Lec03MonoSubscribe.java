@@ -1,7 +1,7 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
-import com.learnreactive.reactive.sec1.subscriber.SubscriberImpl;
-import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 /*
@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono;
  *
  * Project: reactive
  * Package: com.learnreactive.reactive.sec2
- * Created by: Ashish Kushwaha on 21-10-2025 05:21
- * File: Lec02MonoJust
+ * Created by: Ashish Kushwaha on 21-10-2025 05:33
+ * File: Lec03MonoSubscribe
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -22,21 +22,17 @@ import reactor.core.publisher.Mono;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class Lec02MonoJust {
+public class Lec03MonoSubscribe {
+
+    private static final Logger log = LoggerFactory.getLogger(Lec03MonoSubscribe.class);
 
     static void main() {
-        Mono<String> mono = Mono.just("Hello World");
-        SubscriberImpl subscriber = new SubscriberImpl();
-        mono.subscribe(subscriber);
+        var mono = Mono.just(1)
+                .map(i -> i + 2);
 
-        subscriber.getSubscription().request(10);
-        subscriber.getSubscription().request(10);
-        subscriber.getSubscription().cancel();
-
-        save(Mono.just("Hello World"));
-    }
-
-    private static void save(Publisher<String> publisher) {
-
+        mono.subscribe(i -> log.info("Received {}", i),
+                err -> new RuntimeException("error", err),
+                () -> log.info("Completed!"),
+                subscription -> subscription.request(1));
     }
 }

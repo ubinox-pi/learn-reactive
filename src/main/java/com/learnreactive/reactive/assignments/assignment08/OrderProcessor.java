@@ -1,19 +1,16 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.assignments.assignment08;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.stream.Stream;
+import reactor.core.publisher.Flux;
 
 /*
- * Copyright (c) 2025 Ramjee Prasad
+ * Copyright (c) 2026 Ramjee Prasad
  * Licensed under a custom Non-Commercial, Attribution, Share-Alike License.
  * See the LICENSE file in the project root for full license information.
  *
  * Project: reactive
- * Package: com.learnreactive.reactive.sec2
- * Created by: Ashish Kushwaha on 21-10-2025 05:07
- * File: Lec01LasyStream
+ * Package: com.learnreactive.reactive.assignments.assignment08
+ * Created by: Ashish Kushwaha on 08-01-2026 18:53
+ * File: OrderProcessor
  *
  * This source code is intended for educational and non-commercial purposes only.
  * Redistribution and use in source and binary forms, with or without modification,
@@ -23,14 +20,8 @@ import java.util.stream.Stream;
  *   - Commercial use is strictly prohibited.
  *
  */
-public class lec01LazyStream {
+public interface OrderProcessor {
+    void consume(Order order);
 
-    private static final Logger log = LoggerFactory.getLogger(lec01LazyStream.class);
-
-    static void main() {
-        Stream.of(1)
-                .peek(i -> log.info("Received {}", i))
-                .toList();
-    }
+    Flux<String> stream();
 }
-

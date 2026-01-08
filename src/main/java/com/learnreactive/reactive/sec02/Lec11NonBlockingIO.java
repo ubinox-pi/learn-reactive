@@ -1,7 +1,7 @@
-package com.learnreactive.reactive.sec2;
+package com.learnreactive.reactive.sec02;
 
 import com.learnreactive.reactive.common.Util;
-import com.learnreactive.reactive.sec2.client.ExternalServiceClient;
+import com.learnreactive.reactive.sec02.client.ExternalServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
