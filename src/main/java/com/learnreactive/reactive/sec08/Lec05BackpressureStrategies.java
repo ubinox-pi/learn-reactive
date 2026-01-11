@@ -60,7 +60,7 @@ public class Lec05BackpressureStrategies {
 //                    log.info("Dropped element {}", con);
 //                    log.info("Total dropped elements {}", con);
 //                })
-                .onBackpressureLatest() // example five - keep only the latest element (similar to drop)
+//                .onBackpressureLatest() // example five - keep only the latest element (similar to drop)
                 .limitRate(1)
                 .publishOn(Schedulers.boundedElastic())
                 .map(Lec05BackpressureStrategies::process)
