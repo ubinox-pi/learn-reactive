@@ -47,7 +47,7 @@ public class Lec05BackpressureStrategies {
                                 Util.sleep(Duration.ofMillis(50));
                             }
                             sink.complete();
-                        }
+                        }, FluxSink.OverflowStrategy.BUFFER // we can also set default backpressure strategy here
                 ).cast(Integer.class)
                 .subscribeOn(Schedulers.boundedElastic());
 
