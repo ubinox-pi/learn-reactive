@@ -52,8 +52,8 @@ public class Lec05BackpressureStrategies {
                 .subscribeOn(Schedulers.boundedElastic());
 
         producer
-//                .onBackpressureBuffer() // example one
-//                .onBackpressureError() //example two
+//                .onBackpressureBuffer() // example one - default buffer size is 256
+//                .onBackpressureError() //example two - throw error when backpressure occurs
 //                .onBackpressureBuffer(10) // example three - beyond this number error will occur
 //                .onBackpressureDrop() // example four - drop the elements
 //                .onBackpressureDrop(con -> {
