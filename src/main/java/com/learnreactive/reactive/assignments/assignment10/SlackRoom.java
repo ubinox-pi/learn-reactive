@@ -43,6 +43,7 @@ public class SlackRoom {
 
     private void subscribeToRoomMessages(SlackMember slackMember) {
         this.flux
+                .filter(sm -> !sm.sender().equals(slackMember.getName()))
                 .map(sm -> sm.formatForDelivery(slackMember.getName()))
                 .subscribe(slackMember::receives);
     }

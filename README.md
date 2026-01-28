@@ -1,7 +1,6 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Project%20Reactor-3.5+-green?style=for-the-badge&logo=spring&logoColor=white" alt="Project Reactor"/>
+  <img src="https://img.shields.io/badge/Project%20Reactor-3.7+-green?style=for-the-badge&logo=spring&logoColor=white" alt="Project Reactor"/>
   <img src="https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 25"/>
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot"/>
   <img src="https://img.shields.io/badge/License-Non--Commercial-blue?style=for-the-badge" alt="License"/>
 </p>
 
@@ -25,7 +24,9 @@
 
 ## 📖 About This Project
 
-This repository is a **complete learning resource** for reactive programming using **Project Reactor**. It covers everything from the basics of the Reactive Streams specification to advanced concepts like backpressure handling, schedulers, and combining publishers.
+This repository is a **complete learning resource** for reactive programming using **Project Reactor**. It covers
+everything from the basics of the Reactive Streams specification to advanced concepts like backpressure handling,
+schedulers, and combining publishers.
 
 ---
 
@@ -72,8 +73,12 @@ cd reactive
 │   ├── 📂 sec09             # Section 09: Combining Publishers
 │   ├── 📂 sec10             # Section 10: Batching & Grouping
 │   ├── 📂 sec11             # Section 11: Repeat & Retry Patterns
+│   ├── 📂 sec12             # Section 12: Sinks - Programmatic Publishers
+│   ├── 📂 sec13             # Section 13: Context - Request Metadata
 │   └── 📂 assignments       # Hands-on Assignments
 └── 📂 src/main/resources    # Configuration & resource files
+    ├── 📄 logback.xml       # Logging configuration
+    └── 📦 demo.jar          # External service for HTTP demos
 ```
 
 ---
@@ -109,12 +114,24 @@ This section implements the Reactive Streams interfaces from scratch to understa
 // Publisher will not produce data unless the subscriber requests it
 Publisher<String> publisher = new PublisherImpl();
 SubscriberImpl subscriber = new SubscriberImpl();
-publisher.subscribe(subscriber);
+publisher.
+
+subscribe(subscriber);
 
 // Request data in batches
-subscriber.getSubscription().request(3);  // Request 3 items
-Thread.sleep(2000);
-subscriber.getSubscription().request(3);  // Request 3 more items
+subscriber.
+
+getSubscription().
+
+request(3);  // Request 3 items
+Thread.
+
+sleep(2000);
+subscriber.
+
+getSubscription().
+
+request(3);  // Request 3 more items
 ```
 
 </details>
@@ -159,16 +176,38 @@ subscriber.getSubscription().request(3);  // Request 3 more items
 Mono<String> mono = Mono.just("Hello World");
 
 // Mono.fromSupplier - lazy evaluation
-Mono.fromSupplier(() -> expensiveComputation())
-    .subscribe(result -> log.info("Result: {}", result));
+Mono.
+
+fromSupplier(() ->
+
+expensiveComputation())
+        .
+
+subscribe(result ->log.
+
+info("Result: {}",result));
 
 // Mono.fromCallable - handles checked exceptions
-Mono.fromCallable(() -> Files.readString(path))
-    .subscribe(content -> log.info("Content: {}", content));
+        Mono.
+
+fromCallable(() ->Files.
+
+readString(path))
+        .
+
+subscribe(content ->log.
+
+info("Content: {}",content));
 
 // Mono.defer - defers publisher creation
-Mono.defer(() -> createPublisher())
-    .subscribe(Util.subscriber("sub1"));
+        Mono.
+
+defer(() ->
+
+createPublisher())
+        .
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -208,22 +247,44 @@ Mono.defer(() -> createPublisher())
 
 ```java
 // Create Flux from values
-Flux.just("Ashish", "Ramjee", "Prasad")
-    .subscribe(Util.subscriber("sub1"));
+Flux.just("Ashish","Ramjee","Prasad")
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Create Flux from collection
 List<Character> list = List.of('a', 'b', 'c', 'd', 'e', 'f');
-Flux.fromIterable(list)
-    .subscribe(Util.subscriber("sub1"));
+Flux.
+
+fromIterable(list)
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Generate range
-Flux.range(1, 10)
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+range(1,10)
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Time-based emissions
-Flux.interval(Duration.ofMillis(500))
-    .map(i -> Util.getFaker().name().firstName())
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+interval(Duration.ofMillis(500))
+        .
+
+map(i ->Util.
+
+getFaker().
+
+name().
+
+firstName())
+        .
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -259,31 +320,63 @@ Flux.interval(Duration.ofMillis(500))
 
 ```java
 // Flux.create - emit until condition met
-Flux.create(fluxSink -> {
-    while (true) {
-        String country = Util.getFaker().country().name();
-        fluxSink.next(country);
-        if (country.equalsIgnoreCase("INDIA")) {
-            fluxSink.complete();
+Flux.create(fluxSink ->{
+        while(true){
+String country = Util.getFaker().country().name();
+        fluxSink.
+
+next(country);
+        if(country.
+
+equalsIgnoreCase("INDIA")){
+        fluxSink.
+
+complete();
             break;
-        }
-    }
-}).subscribe(Util.subscriber("sub1"));
+                    }
+                    }
+                    }).
+
+subscribe(Util.subscriber("sub1"));
 
 // Flux.generate - synchronous, one item at a time
-Flux.generate(sink -> {
-    sink.next(Util.getFaker().country().name());
-}).take(5).subscribe(Util.subscriber("sub1"));
+        Flux.
+
+generate(sink ->{
+        sink.
+
+next(Util.getFaker().
+
+country().
+
+name());
+        }).
+
+take(5).
+
+subscribe(Util.subscriber("sub1"));
 
 // Flux.generate with state
-Flux.generate(
-    () -> 0,  // Initial state
-    (counter, sink) -> {
-        sink.next(Util.getFaker().country().name());
-        if (++counter == 10) sink.complete();
+        Flux.
+
+generate(
+    () ->0,  // Initial state
+        (counter,sink)->{
+        sink.
+
+next(Util.getFaker().
+
+country().
+
+name());
+        if(++counter ==10)sink.
+
+complete();
         return counter;
     }
-).subscribe(Util.subscriber("sub1"));
+            ).
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -324,27 +417,51 @@ Flux.generate(
 
 ```java
 // Handle - combined filter + map
-Flux.range(1, 10)
-    .handle((item, sink) -> {
-        switch (item) {
-            case 1 -> sink.next(-2);      // Transform
-            case 4 -> {}                   // Filter out
-            case 7 -> sink.error(new RuntimeException("7 not allowed"));
-            default -> sink.next(item);    // Pass through
+Flux.range(1,10)
+    .
+
+handle((item, sink) ->{
+        switch(item){
+        case 1->sink.
+
+next(-2);      // Transform
+            case 4->{}                   // Filter out
+                    case 7->sink.
+
+error(new RuntimeException("7 not allowed"));
+default ->sink.
+
+next(item);    // Pass through
         }
-    })
-    .subscribe(Util.subscriber("sub1"));
+                })
+                .
+
+subscribe(Util.subscriber("sub1"));
 
 // Error handling
-Flux.range(1, 10)
-    .map(i -> i == 5 ? 5 / 0 : i)
-    .onErrorContinue((error, obj) -> log.info("Error: {} for {}", error.getMessage(), obj))
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+range(1,10)
+    .
+
+map(i ->i ==5?5/0:i)
+        .
+
+onErrorContinue((error, obj) ->log.
+
+info("Error: {} for {}",error.getMessage(),obj))
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // Timeout with fallback
 getProductName()
-    .timeout(Duration.ofSeconds(1), fallbackMono())
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+timeout(Duration.ofSeconds(1),fallbackMono())
+        .
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -379,19 +496,29 @@ getProductName()
 ```java
 // Cold Publisher - each subscriber gets fresh data
 var coldFlux = Flux.create(sink -> {
-    for (int i = 0; i < 10; i++) {
-        sink.next(i);
-    }
-    sink.complete();
-});
-coldFlux.subscribe(Util.subscriber("sub1")); // Gets 0-9
-coldFlux.subscribe(Util.subscriber("sub2")); // Also gets 0-9
+            for (int i = 0; i < 10; i++) {
+                sink.next(i);
+            }
+            sink.complete();
+        });
+coldFlux.
+
+subscribe(Util.subscriber("sub1")); // Gets 0-9
+        coldFlux.
+
+subscribe(Util.subscriber("sub2")); // Also gets 0-9
 
 // Hot Publisher - shared stream
 var hotFlux = movieStream().publish().refCount(1);
-hotFlux.subscribe(Util.subscriber("Ashish"));  // Starts watching
-Util.sleep(3);
-hotFlux.subscribe(Util.subscriber("Ramjee"));  // Joins mid-movie
+hotFlux.
+
+subscribe(Util.subscriber("Ashish"));  // Starts watching
+        Util.
+
+sleep(3);
+hotFlux.
+
+subscribe(Util.subscriber("Ramjee"));  // Joins mid-movie
 
 // Hot Publisher with cache
 var cachedFlux = stockPriceStream().replay(10).autoConnect(0);
@@ -433,27 +560,65 @@ var cachedFlux = stockPriceStream().replay(10).autoConnect(0);
 
 ```java
 // subscribeOn - changes producer thread
-Flux.create(sink -> {
-    log.info("Producing on: {}", Thread.currentThread().getName());
-    sink.next(1);
-    sink.complete();
+Flux.create(sink ->{
+        log.
+
+info("Producing on: {}",Thread.currentThread().
+
+getName());
+        sink.
+
+next(1);
+    sink.
+
+complete();
 })
-.subscribeOn(Schedulers.boundedElastic())
-.subscribe(i -> log.info("Received: {}", i));
+        .
+
+subscribeOn(Schedulers.boundedElastic())
+        .
+
+subscribe(i ->log.
+
+info("Received: {}",i));
 
 // publishOn - changes consumer thread
-Flux.range(1, 3)
-    .doOnNext(i -> log.info("Produced: {}", i))
-    .publishOn(Schedulers.parallel())
-    .subscribe(i -> log.info("Consumed: {}", i));
+        Flux.
+
+range(1,3)
+    .
+
+doOnNext(i ->log.
+
+info("Produced: {}",i))
+        .
+
+publishOn(Schedulers.parallel())
+        .
+
+subscribe(i ->log.
+
+info("Consumed: {}",i));
 
 // Parallel processing
-Flux.range(1, 10)
-    .parallel(4)
-    .runOn(Schedulers.parallel())
-    .map(this::process)
-    .sequential()
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+range(1,10)
+    .
+
+parallel(4)
+    .
+
+runOn(Schedulers.parallel())
+        .
+
+map(this::process)
+    .
+
+sequential()
+    .
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -490,25 +655,49 @@ Flux.range(1, 10)
 ```java
 // Limit rate - request in batches
 producer
-    .limitRate(5)  // Request 5 items at a time
-    .subscribe(Util.subscriber("sub1"));
+        .limitRate(5)  // Request 5 items at a time
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Backpressure strategies
-Flux.create(sink -> {
-    for (int i = 0; i < 500; i++) {
-        sink.next(i);
-        Util.sleep(Duration.ofMillis(50));
-    }
-    sink.complete();
-}, FluxSink.OverflowStrategy.DROP)  // Drop overflow
-.subscribe(Util.subscriber("sub1"));
+        Flux.
+
+create(sink ->{
+        for(
+int i = 0;
+i< 500;i++){
+        sink.
+
+next(i);
+        Util.
+
+sleep(Duration.ofMillis(50));
+        }
+        sink.
+
+complete();
+},FluxSink.OverflowStrategy.DROP)  // Drop overflow
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // Alternative strategies
-.onBackpressureBuffer()      // Buffer (default)
-.onBackpressureBuffer(10)    // Buffer with limit
-.onBackpressureDrop()        // Drop excess
-.onBackpressureLatest()      // Keep latest only
-.onBackpressureError()       // Error on overflow
+        .
+
+onBackpressureBuffer()      // Buffer (default)
+.
+
+onBackpressureBuffer(10)    // Buffer with limit
+.
+
+onBackpressureDrop()        // Drop excess
+.
+
+onBackpressureLatest()      // Keep latest only
+.
+
+onBackpressureError()       // Error on overflow
 ```
 
 </details>
@@ -554,31 +743,75 @@ Flux.create(sink -> {
 ```java
 // startWith - prepend items
 producer1()
-    .startWith(-1, 0)  // Prepend values
-    .startWith(producer2())  // Prepend another publisher
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+startWith(-1,0)  // Prepend values
+    .
+
+startWith(producer2())  // Prepend another publisher
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // concat - sequential (ordered)
-Flux.concat(producer1(), producer2())
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+concat(producer1(),producer2())
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // merge - parallel (interleaved)
-Flux.merge(producer1(), producer2(), producer3())
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+merge(producer1(),producer2(),
+
+producer3())
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // zip - combine pairwise
-Flux.zip(getBody(), getEngine(), getTires())
-    .map(tuple -> new Car(tuple.getT1(), tuple.getT2(), tuple.getT3()))
-    .subscribe(Util.subscriber("sub1"));
+        Flux.
+
+zip(getBody(),getEngine(),
+
+getTires())
+        .
+
+map(tuple ->new
+
+Car(tuple.getT1(),tuple.
+
+getT2(),tuple.
+
+getT3()))
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // flatMap - parallel inner publishers
-UserService.getAllUser()
-    .flatMap(user -> OrderService.getUserOrder(user.id()))
-    .subscribe(Util.subscriber("sub1"));
+        UserService.
+
+getAllUser()
+    .
+
+flatMap(user ->OrderService.
+
+getUserOrder(user.id()))
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // concatMap - sequential inner publishers (ordered)
-userFlux.concatMap(user -> getOrdersFor(user))
-    .subscribe(Util.subscriber("sub1"));
+        userFlux.
+
+concatMap(user ->
+
+getOrdersFor(user))
+        .
+
+subscribe(Util.subscriber("sub1"));
 ```
 
 </details>
@@ -613,27 +846,55 @@ userFlux.concatMap(user -> getOrdersFor(user))
 ```java
 // Buffer - collect into lists
 eventStream()
-    .buffer(3)  // Emit List of 3 items
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+buffer(3)  // Emit List of 3 items
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Buffer with timeout
 eventStream()
-    .bufferTimeout(3, Duration.ofSeconds(1))  // 3 items OR 1 second
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+bufferTimeout(3,Duration.ofSeconds(1))  // 3 items OR 1 second
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // Window - collect into Flux for processing
 eventStream()
-    .window(5)
-    .flatMap(this::processEventBatch)
-    .subscribe();
+    .
+
+window(5)
+    .
+
+flatMap(this::processEventBatch)
+    .
+
+subscribe();
 
 // GroupBy - split by key
-Flux.range(1, 30)
-    .groupBy(i -> i % 2)  // Even/odd groups
-    .flatMap(groupedFlux ->
-        groupedFlux.doOnNext(i -> log.info("Group {}: {}", groupedFlux.key(), i)).then()
+Flux.
+
+range(1,30)
+    .
+
+groupBy(i ->i %2)  // Even/odd groups
+        .
+
+flatMap(groupedFlux ->
+        groupedFlux.
+
+doOnNext(i ->log.
+
+info("Group {}: {}",groupedFlux.key(),i)).
+
+then()
     )
-    .subscribe();
+            .
+
+subscribe();
 ```
 
 </details>
@@ -670,32 +931,223 @@ Flux.range(1, 30)
 ```java
 // Repeat - re-subscribe on completion
 getCountry()
-    .repeat(2)  // Original + 2 repeats
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+repeat(2)  // Original + 2 repeats
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Repeat until condition
 getCountry()
-    .repeat()
-    .takeUntil(c -> c.equalsIgnoreCase("canada"))
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+repeat()
+    .
+
+takeUntil(c ->c.
+
+equalsIgnoreCase("canada"))
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // Repeat with delay
 getCountry()
-    .repeatWhen(flux -> flux.delayElements(Duration.ofSeconds(2)).take(2))
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+repeatWhen(flux ->flux.
+
+delayElements(Duration.ofSeconds(2)).
+
+take(2))
+        .
+
+subscribe(Util.subscriber("sub1"));
 
 // Retry - re-subscribe on error
 getCountry()
-    .retry(3)  // Retry up to 3 times
-    .subscribe(Util.subscriber("sub1"));
+    .
+
+retry(3)  // Retry up to 3 times
+    .
+
+subscribe(Util.subscriber("sub1"));
 
 // Retry with backoff and filtering
 getCountry()
-    .retryWhen(
+    .
+
+retryWhen(
         Retry.fixedDelay(3, Duration.ofSeconds(1))
-            .filter(ex -> RuntimeException.class.equals(ex.getClass()))
-            .doBeforeRetry(signal -> log.info("Retrying..."))
-    )
+        .
+
+filter(ex ->RuntimeException .class.
+
+equals(ex.getClass()))
+        .
+
+doBeforeRetry(signal ->log.
+
+info("Retrying..."))
+        )
+        .
+
+subscribe(Util.subscriber("sub1"));
+```
+
+</details>
+
+---
+
+<details>
+<summary><h3>📗 Section 12: Sinks - Programmatic Publishers</h3></summary>
+
+> **Create publishers programmatically with thread-safe emission**
+
+Sinks provide a way to programmatically and thread-safely emit signals into a reactive pipeline. They are the modern
+replacement for processors.
+
+#### 📁 Files
+
+| File                                  | Description                               |
+|---------------------------------------|-------------------------------------------|
+| `Lec01SinkOne.java`                   | Sinks.One for single value emission       |
+| `Lec02SinkUnicast.java`               | Unicast sink - single subscriber only     |
+| `Lec03Multicast.java`                 | Multicast sink - multiple subscribers     |
+| `Lec04ThreadSafety.java`              | Thread-safe emission with sinks           |
+| `Lec05MulticastDirectBestEffort.java` | Best effort delivery for slow subscribers |
+| `Lec06DirectAllOrNothing.java`        | All-or-nothing multicast strategy         |
+| `Lec07Replay.java`                    | Replay sink - cache for late subscribers  |
+| `Lec08SlackAssignment.java`           | Assignment demo entry point               |
+
+#### 🔑 Key Concepts
+
+- `Sinks.One<T>` - Emit exactly one value (like Mono)
+- `Sinks.Many<T>.unicast()` - Single subscriber, unbounded buffer
+- `Sinks.Many<T>.multicast()` - Multiple subscribers, no replay
+- `Sinks.Many<T>.replay()` - Multiple subscribers with replay/cache
+- `tryEmitNext()` - Non-blocking emission (returns result)
+- `emitNext()` - Blocking emission with failure handler
+- Thread-safe by design - safe to call from multiple threads
+
+#### 💻 Example Code
+
+```java
+// Sinks.One - single value emission
+Sinks.One<String> sink = Sinks.one();
+Mono<String> mono = sink.asMono();
+mono.
+
+subscribe(Util.subscriber("sub1"));
+        sink.
+
+tryEmitValue("Hello World!");
+
+// Sinks.Many unicast - single subscriber
+var unicastSink = Sinks.many().unicast().onBackpressureBuffer();
+var flux = unicastSink.asFlux();
+unicastSink.
+
+tryEmitNext("Message 1");
+unicastSink.
+
+tryEmitNext("Message 2");
+flux.
+
+subscribe(Util.subscriber("sub1"));  // Gets all messages
+
+// Sinks.Many multicast - multiple subscribers
+var multicastSink = Sinks.many().multicast().onBackpressureBuffer();
+var flux = multicastSink.asFlux();
+flux.
+
+subscribe(Util.subscriber("Ashish"));
+        flux.
+
+subscribe(Util.subscriber("Kumar"));
+        multicastSink.
+
+tryEmitNext("Broadcast message");  // Both receive
+
+// Sinks.Many replay - cache for late subscribers
+var replaySink = Sinks.many().replay().all();  // Cache all items
+var flux = replaySink.asFlux();
+replaySink.
+
+tryEmitNext("Message 1");
+replaySink.
+
+tryEmitNext("Message 2");
+flux.
+
+subscribe(Util.subscriber("Late"));  // Gets Message 1 & 2
+
+// Replay with limit
+var limitedSink = Sinks.many().replay().limit(2);  // Cache last 2
+```
+
+</details>
+
+---
+
+<details>
+<summary><h3>📗 Section 13: Context - Request Metadata</h3></summary>
+
+> **Pass metadata through the reactive pipeline (similar to HTTP headers)**
+
+Context provides a way to pass metadata (like user info, correlation IDs, authentication tokens) through the reactive pipeline without explicitly passing them as method parameters.
+
+#### 📁 Files
+
+| File                              | Description                        |
+|-----------------------------------|------------------------------------|
+| `Lec01Context.java`               | Basic context read and write       |
+| `Lec02ContextAppendUpdate.java`   | Appending and updating context     |
+| `Lec03ContextPropagation.java`    | Context propagation across streams |
+| `Lec04ContextRateLimiterDemo.java`| Real-world rate limiter example    |
+| `client/ExternalServiceClient.java`| HTTP client with context          |
+| `client/UserService.java`         | User service with context          |
+| `client/RateLimiter.java`         | Rate limiter using context         |
+
+#### 🔑 Key Concepts
+
+- `Context` - Immutable key-value store for request metadata
+- `contextWrite()` - Add data to context (flows upstream)
+- `deferContextual()` - Access context when creating publisher
+- `Mono.deferContextual()` / `Flux.deferContextual()` - Read context values
+- Context flows **bottom-up** (from subscriber to publisher)
+- Each subscriber gets its own context (isolated)
+
+#### 💻 Example Code
+
+```java
+// Writing and reading context
+getWelcomeMessage()
+    .contextWrite(Context.of("user", "Ramjee"))
+    .subscribe(Util.subscriber("sub1"));
+
+public static Mono<String> getWelcomeMessage() {
+    return Mono.deferContextual(context -> {
+        if (context.hasKey("user")) {
+            return Mono.just("Welcome %s!".formatted(context.get("user")));
+        }
+        return Mono.error(new RuntimeException("unauthenticated"));
+    });
+}
+
+// Context propagation across merged streams
+getWelcomeMessage()
+    .concatWith(Flux.merge(producer1(), producer2()))
+    .contextWrite(Context.of("user", "Ramjee"))
+    .subscribe(Util.subscriber("sub1"));
+
+// Override context for specific producer
+producer2().contextWrite(_ -> Context.empty())  // Clear context
+
+// Rate limiter with context
+client.getBook()
+    .contextWrite(Context.of("user", "Ashish"))
     .subscribe(Util.subscriber("sub1"));
 ```
 
@@ -716,6 +1168,62 @@ getCountry()
 | 07 | [ExternalServiceClient](src/main/java/com/learnreactive/reactive/assignments/assignment07) | Sec 05  | Timeout and transform operators                         |
 | 08 | [OrderProcessor](src/main/java/com/learnreactive/reactive/assignments/assignment08)        | Sec 06  | Hot publisher for order processing                      |
 | 09 | [ProductDetails](src/main/java/com/learnreactive/reactive/assignments/assignment09)        | Sec 09  | Combining publishers with zip()                         |
+| 10 | [SlackRoom](src/main/java/com/learnreactive/reactive/assignments/assignment10)             | Sec 12  | Slack-like chat room using Sinks.Many.replay()          |
+
+---
+
+## ⚙️ Configuration Files
+
+### 📦 demo.jar - External Service
+
+The `demo.jar` file located in `src/main/resources/` is an external HTTP service required for running HTTP client demos
+in sections like sec11 and sec13.
+
+**How to Run:**
+
+```bash
+# Navigate to resources directory
+cd src/main/resources
+
+# Run the external service (runs on localhost:8080)
+java -jar demo.jar --server.port=8080
+```
+
+> **Note:** This service must be running before executing HTTP client demos (e.g., `Lec03DemoJar.java`,
+`ExternalServiceClient.java`).
+
+### 📄 logback.xml - Logging Configuration
+
+The `logback.xml` file in `src/main/resources/` configures the logging output format for the project.
+
+**Configuration Details:**
+
+```xml
+
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%15.15t] %cyan(%-30.30logger{30}) : %m%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="io.netty.resolver.dns.DnsServerAddressStreamProviders" level="OFF"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+
+**Log Format Explanation:**
+
+| Token              | Description                              |
+|--------------------|------------------------------------------|
+| `%d{HH:mm:ss.SSS}` | Timestamp (hours:minutes:seconds.millis) |
+| `%-5level`         | Log level (INFO, DEBUG, etc.)            |
+| `[%15.15t]`        | Thread name (max 15 chars)               |
+| `%cyan(...)`       | Logger name in cyan color                |
+| `%m%n`             | Message + newline                        |
+
+> **Tip:** The Netty DNS resolver logs are disabled to reduce noise in the console output.
 
 ---
 
@@ -728,7 +1236,9 @@ A reusable subscriber implementation for learning and debugging:
 ```java
 // Usage
 Mono.just("Hello")
-    .subscribe(Util.subscriber("MySubscriber"));
+    .
+
+subscribe(Util.subscriber("MySubscriber"));
 ```
 
 ### AbstractHttpClient
@@ -753,9 +1263,15 @@ Helpful utilities for demos:
 
 ```java
 Util.subscriber("name")     // Create a subscriber
-Util.getFaker()             // Get Faker instance
-Util.sleep(seconds)         // Thread sleep
-Util.fluxLogger("name")     // Add logging to Flux
+Util.
+
+getFaker()             // Get Faker instance
+Util.
+
+sleep(seconds)         // Thread sleep
+Util.
+
+fluxLogger("name")     // Add logging to Flux
 ```
 
 ---
@@ -800,6 +1316,12 @@ Util.fluxLogger("name")     // Add logging to Flux
 ├─────────────────────────────────────────────────────────────────┤
 │  11. Repeat & Retry (sec11)                                     │
 │     └── Resilience patterns                                     │
+├─────────────────────────────────────────────────────────────────┤
+│  12. Sinks (sec12)                                              │
+│     └── Programmatic publishers with thread-safe emission       │
+├─────────────────────────────────────────────────────────────────┤
+│  13. Context (sec13)                                            │
+│     └── Request metadata propagation through pipeline           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
