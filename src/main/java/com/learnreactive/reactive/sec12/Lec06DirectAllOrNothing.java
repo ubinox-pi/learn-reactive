@@ -1,0 +1,56 @@
+package com.learnreactive.reactive.sec12;
+
+import com.learnreactive.reactive.common.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Sinks;
+
+import java.time.Duration;
+
+/*
+ * Copyright (c) 2026 Ramjee Prasad
+ * Licensed under a custom Non-Commercial, Attribution, Share-Alike License.
+ * See the LICENSE file in the project root for full license information.
+ *
+ * Project: reactive
+ * Package: com.learnreactive.reactive.sec12
+ * Created by: Ashish Kushwaha on 28-01-2026 22:14
+ * File: Lec06DirectAllOrNothing
+ *
+ * This source code is intended for educational and non-commercial purposes only.
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *   - Attribution must be given to the original author.
+ *   - The code must be shared under the same license.
+ *   - Commercial use is strictly prohibited.
+ *
+ */
+public class Lec06DirectAllOrNothing {
+    private static final Logger log = LoggerFactory.getLogger(Lec06DirectAllOrNothing.class);
+
+    static void main() {
+        demo1();
+    }
+
+    public static void demo1() {
+
+        System.setProperty("reactor.bufferSize.small", "16");
+
+        // handle through which we would push items
+        // onBackPressureBuffer - unbounded queue
+        var sink = Sinks.many().multicast().directAllOrNothing();
+
+        // handle through which subscribers will receive items.
+        var flux = sink.asFlux();
+
+        flux.subscribe(Util.subscriber("Ashish"));
+        flux.delayElements(Duration.ofMillis(200)).subscribe(Util.subscriber("Kumar"));
+        for (int i = 0; i < 100; i++) {
+            var result = sink.tryEmitNext(i);
+            log.info("Emitted: item: {} - result: {}", i, result);
+        }
+
+        Util.sleep(10);
+
+    }
+}
