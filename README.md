@@ -76,6 +76,8 @@ cd reactive
 │   ├── 📂 sec12             # Section 12: Sinks - Programmatic Publishers
 │   ├── 📂 sec13             # Section 13: Context - Request Metadata
 │   └── 📂 assignments       # Hands-on Assignments
+├── 📂 src/test/java/com/learnreactive/reactive
+│   └── 📂 test              # Section 14: Testing with StepVerifier
 └── 📂 src/main/resources    # Configuration & resource files
     ├── 📄 logback.xml       # Logging configuration
     └── 📦 demo.jar          # External service for HTTP demos
@@ -1155,6 +1157,195 @@ client.getBook()
 
 ---
 
+<details>
+<summary><h3>📗 Section 14: Testing with StepVerifier</h3></summary>
+
+> **Learn to test reactive streams using reactor-test library**
+
+This section covers testing reactive publishers using `StepVerifier` and `StepVerifierOptions` from the `reactor-test` library. Located in `src/test/java/com/learnreactive/reactive/test/`.
+
+#### 📁 Files
+
+| File                       | Description                              |
+|----------------------------|------------------------------------------|
+| `Lec01MonoTest.java`       | Basic StepVerifier usage with Mono       |
+| `Lec02EmptyErrorTest.java` | Testing empty and error signals          |
+| `Lec03FluxTest.java`       | Testing Flux emissions                   |
+| `Lec04RangeTest.java`      | Testing range-based Flux                 |
+| `Lec05AssertNextTest.java` | Using assertNext and thenConsumeWhile    |
+| `Lec06VirtualTimeTest.java`| Virtual time for time-based publishers   |
+| `Lec08ContextTest.java`    | Testing with Context                     |
+| `Lec09PublisherTest.java`  | TestPublisher for controlled emissions   |
+| `Lec10ScenarioNameTest.java`| Scenario names and step descriptions    |
+| `Lec11TimeoutTest.java`    | Test timeout constraints                 |
+
+#### 🔑 Key Concepts
+
+**StepVerifier** - Acts as a subscriber to verify reactive stream behavior:
+- `StepVerifier.create(publisher)` - Create verifier for a publisher
+- `expectNext(T...)` - Expect specific values in order
+- `expectComplete()` - Expect completion signal
+- `expectError()` / `expectErrorMessage()` - Expect error signals
+- `verify()` - Subscribe and verify (blocks until complete)
+- `verify(Duration)` - Verify with timeout constraint
+
+**Virtual Time** - Test time-based publishers without waiting:
+- `StepVerifier.withVirtualTime(() -> publisher)` - Enable virtual time
+- `thenAwait(Duration)` - Advance virtual clock
+- `expectNoEvent(Duration)` - Assert no emissions for duration
+
+**StepVerifierOptions** - Configure verifier behavior:
+- `StepVerifierOptions.create()` - Create options builder
+- `.scenarioName(String)` - Name for better error messages
+- `.withInitialContext(Context)` - Provide initial context
+
+**TestPublisher** - Programmatically emit test signals:
+- `TestPublisher.create()` - Create test publisher
+- `.emit(T...)` - Emit values and complete
+- `.next(T...)` - Emit values without completing
+- `.complete()` / `.error(Throwable)` - Send terminal signals
+
+#### 💻 Example Code
+
+```java
+// Basic StepVerifier usage
+@Test
+public void productTest() {
+    StepVerifier.create(getProduct(1))
+            .expectNext("Product_1")
+            .expectComplete()
+            .verify();
+}
+
+// Testing error signals
+@Test
+public void errorTest() {
+    StepVerifier.create(getWelcomeMessage())
+            .expectErrorMessage("unauthenticated")
+            .verify();
+}
+
+// Using assertNext for custom assertions
+@Test
+public void assertNextTest() {
+    StepVerifier.create(getBooks())
+            .assertNext(book -> Assertions.assertEquals(1, book.id))
+            .thenConsumeWhile(Objects::nonNull)
+            .expectComplete()
+            .verify();
+}
+
+// Virtual time for delayed publishers
+@Test
+public void virtualTimeTest() {
+    StepVerifier.withVirtualTime(() -> getItems())  // Items delayed 10s each
+            .thenAwait(Duration.ofSeconds(51))
+            .expectNext(1, 2, 3, 4, 5)
+            .expectComplete()
+            .verify();
+}
+
+// Fine-grained virtual time control
+@Test
+public void virtualTimeTest2() {
+    StepVerifier.withVirtualTime(() -> getItems())
+            .expectSubscription()
+            .expectNoEvent(Duration.ofSeconds(9))
+            .thenAwait(Duration.ofSeconds(1))
+            .expectNext(1)
+            .thenAwait(Duration.ofSeconds(40))
+            .expectNext(2, 3, 4, 5)
+            .expectComplete()
+            .verify();
+}
+
+// StepVerifierOptions with scenario name
+@Test
+public void scenarioNameTest() {
+    StepVerifierOptions options = StepVerifierOptions
+            .create()
+            .scenarioName("1 to 3 item test");
+
+    StepVerifier.create(getItems(), options)
+            .expectNext(1, 2, 3)
+            .expectComplete()
+            .verify();
+}
+
+// Testing with Context
+@Test
+public void contextTest() {
+    StepVerifierOptions options = StepVerifierOptions
+            .create()
+            .withInitialContext(Context.of("user", "Ramjee"));
+
+    StepVerifier.create(getWelcomeMessage(), options)
+            .expectNext("Welcome Ramjee to the Reactive World!")
+            .expectComplete()
+            .verify();
+}
+
+// TestPublisher for controlled testing
+@Test
+public void testPublisherTest() {
+    var publisher = TestPublisher.<String>create();
+    var flux = publisher.flux();
+
+    StepVerifier.create(flux.transform(processor()))
+            .then(() -> publisher.emit("Ramjee", "A", "Ashish"))
+            .expectNext("RAMJEE:6", "ASHISH:6")
+            .expectComplete()
+            .verify();
+}
+
+// Test with timeout constraint
+@Test
+public void timeoutTest() {
+    StepVerifier.create(getItems())
+            .expectNext(1, 2, 3, 4, 5)
+            .expectComplete()
+            .verify(Duration.ofSeconds(2));  // Must complete within 2s
+}
+```
+
+---
+
+### 📋 StepVerifier Methods Reference
+
+| Method | Description |
+|--------|-------------|
+| `create(Publisher)` | Create StepVerifier for publisher |
+| `withVirtualTime(Supplier)` | Create with virtual time scheduler |
+| `expectNext(T...)` | Expect specific values in order |
+| `expectNextCount(long)` | Expect n items (don't care about values) |
+| `expectComplete()` | Expect completion signal |
+| `expectError()` | Expect any error |
+| `expectError(Class)` | Expect specific error type |
+| `expectErrorMessage(String)` | Expect error with message |
+| `assertNext(Consumer)` | Custom assertion on next item |
+| `thenConsumeWhile(Predicate)` | Consume items while predicate is true |
+| `thenAwait(Duration)` | Advance virtual time |
+| `expectNoEvent(Duration)` | Assert no emissions for duration |
+| `expectSubscription()` | Expect subscription signal |
+| `as(String)` | Add description for next expectation |
+| `verify()` | Subscribe and block until complete |
+| `verify(Duration)` | Verify with timeout |
+
+---
+
+### 📋 StepVerifierOptions Methods Reference
+
+| Method | Description |
+|--------|-------------|
+| `create()` | Create new options builder |
+| `scenarioName(String)` | Set scenario name for error messages |
+| `withInitialContext(Context)` | Provide initial Context for testing |
+| `checkUnderRequesting(boolean)` | Check for under-requesting issues |
+
+</details>
+
+---
+
 ## 📝 Assignments
 
 | #  | Assignment                                                                                 | Section | Description                                             |
@@ -1322,6 +1513,9 @@ fluxLogger("name")     // Add logging to Flux
 ├─────────────────────────────────────────────────────────────────┤
 │  13. Context (sec13)                                            │
 │     └── Request metadata propagation through pipeline           │
+├─────────────────────────────────────────────────────────────────┤
+│  14. Testing (test)                                             │
+│     └── StepVerifier, virtual time, TestPublisher               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
